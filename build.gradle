@@ -1,0 +1,33 @@
+buildscript {
+	ext.kotlin_version = '1.2.21'
+	
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+	}
+}
+
+group 'org.jire.pubgeronimo'
+version '1.0.0'
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+	
+	compile group: 'org.pcap4j', name: 'pcap4j-core', version: '1.7.3'
+	compile group: 'org.pcap4j', name: 'pcap4j-packetfactory-static', version: '1.7.3'
+	
+	compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+	compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
+}
