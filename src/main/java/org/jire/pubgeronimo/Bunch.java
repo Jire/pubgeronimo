@@ -2,7 +2,6 @@ package org.jire.pubgeronimo;
 
 public final class Bunch extends PUBGBuffer {
 	
-	public final PUBGBuffer buffer;
 	public final int BunchDataBits, PacketID, ChIndex, ChType, ChSequence;
 	public final boolean bOpen, bClose, bDormant, bIsReplicationPaused;
 	public final boolean bReliable, bPartial, bPartialInitial, bPartialFinal;
@@ -13,7 +12,6 @@ public final class Bunch extends PUBGBuffer {
 	             boolean bReliable, boolean bPartial, boolean bPartialInitial,
 	             boolean bPartialFinal, boolean bHasPackageMapExports, boolean bHasMustBeMappedGUIDs) {
 		super(buffer);
-		this.buffer = buffer;
 		BunchDataBits = bunchDataBits;
 		PacketID = packetID;
 		ChIndex = chIndex;
@@ -33,7 +31,23 @@ public final class Bunch extends PUBGBuffer {
 	
 	@Override
 	public PUBGBuffer deepCopy(int copyBits) {
-		return super.deepCopy(copyBits);
+		return new Bunch(
+				super.deepCopy(copyBits),
+				BunchDataBits,
+				PacketID,
+				ChIndex,
+				ChType,
+				ChSequence,
+				bOpen,
+				bClose,
+				bDormant,
+				bIsReplicationPaused,
+				bReliable,
+				bPartial,
+				bPartialInitial,
+				bPartialFinal,
+				bHasPackageMapExports,
+				bHasMustBeMappedGUIDs);
 	}
 	
 }
