@@ -48,7 +48,7 @@ public final class PUBGSniffer extends SnifferListener {
 			}
 			
 			final boolean bControl = buffer.readBit();
-			boolean bOpen = false, bClose, bDormant;
+			boolean bOpen = false, bClose = false, bDormant = false;
 			if (bControl) {
 				bOpen = buffer.readBit();
 				bClose = buffer.readBit();
@@ -64,7 +64,7 @@ public final class PUBGSniffer extends SnifferListener {
 			final int chSequence
 					= bReliable ? buffer.readInt(PUBGBuffer.MAX_CH_SEQUENCE)
 					: bPartial ? packetID : 0;
-			boolean bPartialInitial, bPartialFinal;
+			boolean bPartialInitial = false, bPartialFinal = false;
 			if (bPartial) {
 				bPartialInitial = buffer.readBit();
 				bPartialFinal = buffer.readBit();
@@ -89,14 +89,13 @@ public final class PUBGSniffer extends SnifferListener {
 				//System.out.println("Made new channel (" + chIndex + "): " + channel.getClass().getName());
 			}
 			
-			if (bHasMustBeMappedGUIDs) {
-				final int numMustBeMappedGUIDs = buffer.readUInt16();
-				for (int i = 0; i < numMustBeMappedGUIDs; i++) {
-					final NetworkGUID networkGUID = buffer.readNetworkGUID();
-				}
-			}
+			final Bunch bunch = new Bunch(buffer.deepCopy(bunchDataBits), bunchDataBits, packetID,
+					chIndex, chType, chSequence, bOpen, bClose, bDormant, bIsReplicationPaused,
+					bReliable, bPartial, bPartialInitial, bPartialFinal, bHasPackageMapExports, bHasMustBeMappedGUIDs);
+			channel.decode(bunch);
 			
-			channel.decode(buffer);
+			buffer.skipBits(bunchDataBits);
+			if (buffer.bitsLeft() + bunchDataBits != pre) return;
 		}
 	}
 	

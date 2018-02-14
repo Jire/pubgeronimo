@@ -2,7 +2,7 @@ package org.jire.pubgeronimo;
 
 import java.nio.charset.Charset;
 
-public final class PUBGBuffer {
+public class PUBGBuffer {
 	
 	private static final byte zeroByte = 0;
 	private static final float shortRotationScale = 360F / 65536F;
@@ -55,6 +55,22 @@ public final class PUBGBuffer {
 	
 	public PUBGBuffer(byte[] raw) {
 		this(raw, raw.length * 8);
+	}
+	
+	public PUBGBuffer(PUBGBuffer buffer) {
+		this(buffer.raw, buffer.posBits, buffer.localTotalBits, buffer.totalBits);
+	}
+	
+	public PUBGBuffer deepCopy(int copyBits) {
+		if (copyBits > totalBits) return null;
+		
+		final PUBGBuffer cpy = cur.shallowCopy(copyBits);
+		PUBGBuffer iter = cur.nextBuffer;
+		while (iter != null) {
+			cpy.append(iter.shallowCopy(copyBits - cpy.totalBits));
+			iter = iter.nextBuffer;
+		}
+		return cpy;
 	}
 	
 	private PUBGBuffer shallowCopy(int maxTotalBits) {

@@ -1,9 +1,9 @@
 package org.jire.pubgeronimo.protocol;
 
-import org.jire.pubgeronimo.PUBGBuffer;
+import org.jire.pubgeronimo.Bunch;
 
 public interface Decoder {
 	
-	void decode(PUBGBuffer buffer);
+	void decode(Bunch bunch);
 	
 }
