@@ -92,11 +92,16 @@ public final class PUBGSniffer extends SnifferListener {
 			final Bunch bunch = new Bunch(buffer.deepCopy(bunchDataBits), bunchDataBits, packetID,
 					chIndex, chType, chSequence, bOpen, bClose, bDormant, bIsReplicationPaused,
 					bReliable, bPartial, bPartialInitial, bPartialFinal, bHasPackageMapExports, bHasMustBeMappedGUIDs);
-			System.out.println("yoo!! :D");
-			channel.decode(bunch);
-			
+			try {
+				channel.decode(bunch);
+			} catch (Throwable t) {
+				t.printStackTrace();
+			}
 			buffer.skipBits(bunchDataBits);
-			//if (buffer.bitsLeft() + bunchDataBits != pre) return;
+			if (buffer.bitsLeft() + bunchDataBits != pre) {
+				System.out.println("gg buddie " + bunchDataBits);
+				return;
+			}
 		}
 	}
 	

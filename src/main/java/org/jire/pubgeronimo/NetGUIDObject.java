@@ -19,6 +19,10 @@ public final class NetGUIDObject {
 		IgnoreWhenMissing = ignoreWhenMissing;
 	}
 	
+	public NetGUIDObject(String pathName, NetworkGUID outerGUID) {
+		this(pathName, outerGUID, 0, false, false);
+	}
+	
 	public String getPathName() {
 		return pathName;
 	}

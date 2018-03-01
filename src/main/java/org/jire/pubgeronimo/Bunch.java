@@ -7,6 +7,16 @@ public final class Bunch extends PUBGBuffer {
 	public final boolean bReliable, bPartial, bPartialInitial, bPartialFinal;
 	public final boolean bHasPackageMapExports, bHasMustBeMappedGUIDs;
 	
+	private Bunch next;
+	
+	public Bunch getNext() {
+		return next;
+	}
+	
+	public void setNext(Bunch next) {
+		this.next = next;
+	}
+	
 	public Bunch(PUBGBuffer buffer, int bunchDataBits, int packetID, int chIndex, int chType, int chSequence,
 	             boolean bOpen, boolean bClose, boolean bDormant, boolean bIsReplicationPaused,
 	             boolean bReliable, boolean bPartial, boolean bPartialInitial,

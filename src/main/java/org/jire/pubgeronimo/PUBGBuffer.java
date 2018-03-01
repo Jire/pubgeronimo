@@ -62,7 +62,10 @@ public class PUBGBuffer {
 	}
 	
 	public PUBGBuffer deepCopy(int copyBits) {
-		if (copyBits > totalBits) return null;
+		if (copyBits > totalBits) {
+			System.out.println("dumb nigger");
+			return null;
+		}
 		
 		final PUBGBuffer cpy = cur.shallowCopy(copyBits);
 		PUBGBuffer iter = cur.nextBuffer;
@@ -286,26 +289,32 @@ public class PUBGBuffer {
 		if (!netGUID.isValid()) return new ObjectPtr(netGUID, null);
 		
 		NetGUIDObject obj = null;
+		if (netGUID.isValid() && !netGUID.isDefault())
+			obj = NetGUIDCache.INSTANCE.getObjectFromNetGUID(netGUID);
 		
-		if (netGUID.isDefault()) {
+		if (netGUID.isDefault() || NetGUIDCache.INSTANCE.isExportingNetGUIDBunch()) {
 			final ExportFlags exportFlags = new ExportFlags(readUInt8());
 			if (exportFlags.bHasPath()) {
 				final ObjectPtr objectPtr = readObject();
-				final NetworkGUID outerGUID = objectPtr.getNetworkGUID();
-				final NetGUIDObject outerObj = objectPtr.getNetGUIDObject();
-				
-				final String pathName = readString();
-				final int networkChecksum = exportFlags.bHasNetworkChecksum() ? (int) readUInt32() : 0;
-				final boolean bIsPackage = netGUID.isStatic() && !outerGUID.isValid();
-				
-				//if (obj != null)
-				if (netGUID.isDefault()) { // assign GUID
-					return new ObjectPtr(netGUID, null);
+				if (objectPtr != null) {
+					final NetworkGUID outerGUID = objectPtr.getNetworkGUID();
+					final NetGUIDObject outerObj = objectPtr.getNetGUIDObject();
+					
+					final String pathName = readString();
+					final int networkChecksum = exportFlags.bHasNetworkChecksum() ? (int) readUInt32() : 0;
+					final boolean bIsPackage = netGUID.isStatic() && !outerGUID.isValid();
+					
+					if (obj != null) return new ObjectPtr(netGUID, obj);
+					if (netGUID.isDefault()) { // assign GUID
+						return new ObjectPtr(netGUID, null);
+					}
+					
+					final boolean bIgnoreWhenMissing = exportFlags.bNoLoad();
+					NetGUIDCache.INSTANCE.registerNetGUIDFromPath_Client(
+							netGUID, pathName, outerGUID,
+							networkChecksum, exportFlags.bNoLoad(), bIgnoreWhenMissing);
+					obj = NetGUIDCache.INSTANCE.getObjectFromNetGUID(netGUID);
 				}
-				
-				final boolean bIgnoreWhenMissing = exportFlags.bNoLoad();
-				
-				obj = new NetGUIDObject(pathName, outerGUID, networkChecksum, exportFlags.bNoLoad(), bIgnoreWhenMissing);
 			}
 		}
 		return new ObjectPtr(netGUID, obj);

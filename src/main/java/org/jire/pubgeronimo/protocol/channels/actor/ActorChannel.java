@@ -61,41 +61,44 @@ public final class ActorChannel extends Channel {
 	
 	private void serializeActor(Bunch bunch) {
 		final ObjectPtr objectPtr = bunch.readObject();
-		if (objectPtr != null) {
-			final NetworkGUID netGUID = objectPtr.getNetworkGUID();
-			final NetGUIDObject newActor = objectPtr.getNetGUIDObject();
-			if (netGUID.isDynamic()) {
-				final ObjectPtr archetypeObjectPtr = bunch.readObject();
-				if (archetypeObjectPtr != null) {
-					final NetworkGUID archetypeNetGUID = objectPtr.getNetworkGUID();
-					final NetGUIDObject archetype = objectPtr.getNetGUIDObject();
-					final String pathName = archetype.getPathName();
-					System.out.println(pathName + " (" + ActorType.typeForString(pathName) + ")");
-					
-					final boolean bSerializeLocation = bunch.readBit();
-					
-					final Vector3 location = bSerializeLocation ? bunch.readVector() : new Vector3(0, 0, 0);
-					System.out.println("at " + location);
-					
-					final boolean bSerializeRotation = bunch.readBit();
-					final Vector3 rotation = bSerializeRotation ? bunch.readRotationShort() : new Vector3(0, 0, 0);
-					
-					final boolean bSerializeScale = bunch.readBit();
-					final Vector3 scale = bSerializeScale ? bunch.readVector() : new Vector3(0, 0, 0);
-					
-					final boolean bSerializeVelocity = bunch.readBit();
-					final Vector3 velocity = bSerializeVelocity ? bunch.readVector() : new Vector3(0, 0, 0);
-					
-					actor = new Actor(netGUID, archetypeNetGUID, archetype, getChannelIndex());
-					actor.setLocation(location);
-					actor.setRotation(rotation);
-					actor.setVelocity(velocity);
-				}
-			} else {
-				if (newActor == null) return;
-				actor = new Actor(netGUID, newActor.getOuterGUID(), newActor, getChannelIndex());
-				actor.setStatic(true);
-			}
+		if (objectPtr == null) return;
+		
+		final NetworkGUID netGUID = objectPtr.getNetworkGUID();
+		final NetGUIDObject newActor = objectPtr.getNetGUIDObject();
+		if (netGUID == null || newActor == null) return;
+		
+		if (netGUID.isDynamic()) {
+			final ObjectPtr archetypeObjectPtr = bunch.readObject();
+			if (archetypeObjectPtr == null) return;
+			
+			final NetworkGUID archetypeNetGUID = objectPtr.getNetworkGUID();
+			final NetGUIDObject archetype = objectPtr.getNetGUIDObject();
+			if (archetypeNetGUID == null || archetype == null) return;
+			
+			final String pathName = archetype.getPathName();
+			System.out.println(pathName + " (" + ActorType.typeForString(pathName) + ")");
+			
+			final boolean bSerializeLocation = bunch.readBit();
+			
+			final Vector3 location = bSerializeLocation ? bunch.readVector() : new Vector3(0, 0, 0);
+			System.out.println("at " + location);
+			
+			final boolean bSerializeRotation = bunch.readBit();
+			final Vector3 rotation = bSerializeRotation ? bunch.readRotationShort() : new Vector3(0, 0, 0);
+			
+			final boolean bSerializeScale = bunch.readBit();
+			final Vector3 scale = bSerializeScale ? bunch.readVector() : new Vector3(0, 0, 0);
+			
+			final boolean bSerializeVelocity = bunch.readBit();
+			final Vector3 velocity = bSerializeVelocity ? bunch.readVector() : new Vector3(0, 0, 0);
+			
+			actor = new Actor(netGUID, archetypeNetGUID, archetype, getChannelIndex());
+			actor.setLocation(location);
+			actor.setRotation(rotation);
+			actor.setVelocity(velocity);
+		} else {
+			actor = new Actor(netGUID, newActor.getOuterGUID(), newActor, getChannelIndex());
+			actor.setStatic(true);
 		}
 	}
 	
